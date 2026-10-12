@@ -1,7 +1,5 @@
 import { ref } from "vue";
 
-//localhost:5173/?gmr=ChIJuz5C44C_4pQRBfLAZ5duNEk&m=https://app.cardapioweb.com/sushi_do_adao&i=sushidoadao
-
 function linktreeController() {
     const searchParams = ref('')
     const baseUrlGoogleMaps = 'https://search.google.com/local/writereview?placeid='

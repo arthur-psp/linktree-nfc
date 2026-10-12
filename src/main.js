@@ -1,9 +1,9 @@
 import { createApp } from 'vue'
 import './style.css'
-import { createVuetify } from 'vuetify'
-import 'vuetify/styles'
 import App from './App.vue'
+import { vuetify } from './plugins/vuetify.js'
+import { setWasmUrl } from '@lottiefiles/dotlottie-vue'
 
-const vuetify = createVuetify()
+setWasmUrl('/dotlottie-player.wasm')
 
 createApp(App).use(vuetify).mount('#app')

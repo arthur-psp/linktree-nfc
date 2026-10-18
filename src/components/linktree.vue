@@ -23,7 +23,7 @@
                 v-if="showButtons"
                 density="default"
                 rounded="pill"
-                class="mb-6 text-secondary rounded border"
+                class="mb-6 text-primary rounded border"
                 flat
                 variant="text"
                 width="90%"
@@ -31,7 +31,7 @@
               >
                 <div class="d-flex align-center justify-space-between w-100">
                   <span> Deixe uma Avaliação</span>
-                  <div class="svg-icon svg-icon-review" style="background-color: currentColor;"></div>
+                  <div class="svg-icon svg-icon-review"></div>
                 </div>
               </v-btn>
             </v-slide-y-reverse-transition>
@@ -41,7 +41,7 @@
                 v-if="showButtons"
                 density="default"
                 rounded="pill"
-                class="mb-6 text-secondary rounded border"
+                class="mb-6 text-primary rounded border"
                 flat
                 variant="text"
                 width="90%"
@@ -49,7 +49,7 @@
               >
                 <div class="d-flex align-center justify-space-between w-100">
                   <span>Ver Menu</span>
-                  <div class="svg-icon svg-icon-menu" style="background-color: currentColor;"></div>
+                  <div class="svg-icon svg-icon-menu"></div>
                 </div>
               </v-btn>
             </v-slide-y-reverse-transition>
@@ -59,7 +59,7 @@
                 v-if="showButtons"
                 density="default"
                 rounded="pill"
-                class="mb-6 text-secondary rounded border"
+                class="mb-6 text-primary rounded border"
                 flat
                 variant="text"
                 width="90%"
@@ -67,7 +67,7 @@
               >
                 <div class="d-flex align-center justify-space-between w-100">
                   <span>Instagram</span>
-                  <div class="svg-icon svg-icon-insta" style="background-color: currentColor;"></div>
+                  <div class="svg-icon svg-icon-insta"></div>
                 </div>
               </v-btn>
             </v-slide-y-reverse-transition>
@@ -77,7 +77,7 @@
                 v-if="showButtons"
                 density="default"
                 rounded="pill"
-                class="mb-6 text-secondary rounded border"
+                class="mb-6 text-primary rounded border"
                 flat
                 variant="text"
                 width="90%"
@@ -85,7 +85,7 @@
               >
                 <div class="d-flex align-center justify-space-between w-100">
                   <span>Conectar Wi-Fi</span>
-                  <div class="svg-icon svg-icon-wifi" style="background-color: currentColor;"></div>
+                  <div class="svg-icon svg-icon-wifi"></div>
                 </div>
               </v-btn>
             </v-slide-y-reverse-transition>
@@ -95,7 +95,7 @@
                 v-if="showButtons"
                 density="default"
                 rounded="pill"
-                class="text-secondary rounded border "
+                class="text-primary rounded border "
                 flat
                 variant="text"
                 width="90%"
@@ -103,7 +103,7 @@
               >
                 <div class="d-flex align-center justify-space-between w-100">
                   <span>Jogar</span>
-                  <div class="svg-icon svg-icon-game" style="background-color: currentColor;"></div>
+                  <div class="svg-icon svg-icon-game"></div>
                 </div>
               </v-btn>
             </v-slide-y-reverse-transition>
@@ -134,7 +134,7 @@
           variant="tonal"
           width="90%"
           @click="controller.copyWifiPass"
-          class="mt-2"
+          class="mt-2 text-primary"
         >Copiar Senha</v-btn>
       </v-card>
     </v-dialog>
@@ -189,7 +189,63 @@ onBeforeUnmount(() => {
 .svg-icon {
   width: 16px;
   height: 16px;
-  opacity: 50%;
+  /* Cor vinda do tema (secondary), sem herdar a cor do texto */
+  background-color: rgb(var(--v-theme-secondary));
+  transition: background-color 0.3s ease;
+}
+
+/* Hover dos botões de link: fundo secondary, texto e ícone em primary */
+.link-actions .v-btn {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.link-actions .v-btn:hover {
+  background-color: rgb(var(--v-theme-secondary));
+  color: rgb(var(--v-theme-primary));
+}
+
+/* O overlay nativo do Vuetify usa currentColor e tingiria o fundo secondary */
+.link-actions .v-btn:hover :deep(.v-btn__overlay) {
+  opacity: 0;
+}
+
+.link-actions .v-btn:hover .svg-icon {
+  background-color: rgb(var(--v-theme-primary));
+}
+
+/* Ícones de review e menu: um pouco maiores e com mais peso.
+   A máscara é repetida com pequenos deslocamentos e composta com "add",
+   engrossando a silhueta sem alterar os arquivos SVG. */
+.svg-icon-review,
+.svg-icon-menu {
+  width: 20px;
+  height: 20px;
+  --icon-weight: 0.2px;
+  --icon-mask: url('/review.svg');
+  -webkit-mask-image: var(--icon-mask), var(--icon-mask), var(--icon-mask), var(--icon-mask), var(--icon-mask);
+  mask-image: var(--icon-mask), var(--icon-mask), var(--icon-mask), var(--icon-mask), var(--icon-mask);
+  -webkit-mask-position:
+    center,
+    calc(50% + var(--icon-weight)) center,
+    calc(50% - var(--icon-weight)) center,
+    center calc(50% + var(--icon-weight)),
+    center calc(50% - var(--icon-weight));
+  mask-position:
+    center,
+    calc(50% + var(--icon-weight)) center,
+    calc(50% - var(--icon-weight)) center,
+    center calc(50% + var(--icon-weight)),
+    center calc(50% - var(--icon-weight));
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
+}
+
+.svg-icon-menu {
+  --icon-mask: url('/menu.svg');
 }
 
 /* Card: o slide nativo do Vuetify desloca apenas 15px, então ampliamos
@@ -230,16 +286,6 @@ onBeforeUnmount(() => {
 
 .link-actions > .slide-y-reverse-transition-enter-active:nth-child(5) {
   transition-delay: 0.32s;
-}
-
-.svg-icon-review {
-  mask: url('/review.svg') no-repeat center / contain;
-  -webkit-mask: url('/review.svg') no-repeat center / contain;
-}
-
-.svg-icon-menu {
-  mask: url('/menu.svg') no-repeat center / contain;
-  -webkit-mask: url('/menu.svg') no-repeat center / contain;
 }
 
 .svg-icon-insta {

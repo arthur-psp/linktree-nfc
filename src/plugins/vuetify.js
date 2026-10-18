@@ -4,8 +4,12 @@ import * as directives from 'vuetify/directives'
 import { createVuetify } from 'vuetify'
 import { pt } from 'vuetify/locale'
 
-const lightTheme = {
-  dark: false,
+/* Cor da marca: permanece idêntica nos dois temas (não alterar) */
+const brandSecondary = '#eb5e28'
+
+/* Tema escuro (paleta original do projeto) */
+const darkTheme = {
+  dark: true,
   colors: {
     /* --- fundos e superfícies --- */
     background: '#252422',
@@ -24,13 +28,57 @@ const lightTheme = {
     'on-bg': '#fffcf2',
     /* --- semânticas --- */
     primary: '#fffcf2', //text color
-    secondary: '#eb5e28', // bg hover color
+    secondary: brandSecondary, // bg hover color
+
+    /* --- contraste sobre as cores semânticas --- */
+    'on-primary': '#252422',
+    'on-secondary': '#fffcf2',
 
     /* --- separador sólido (Apple opaqueSeparator) --- */
     'separator-opaque': '#C6C6C8',
   },
   variables: {
     'border-color': '#fffcf2',
+    'border-opacity': 0.12,
+    'high-emphasis-opacity': 0.8,
+    'medium-emphasis-opacity': 0.5,
+    'disabled-opacity': 0.2,
+    'overlay-multiplier': 0.6,
+  },
+}
+
+/* Tema claro: mesma estrutura do escuro, com fundos claros e contraste escuro */
+const lightTheme = {
+  dark: false,
+  colors: {
+    /* --- fundos e superfícies --- */
+    background: '#f6f3ec',
+    surface: '#ffffff',
+    'surface-light': '#fbf9f4',
+    'surface-variant': '#e8e4d9',
+    'surface-bright': '#ffffff',
+    'on-surface-bright': '#252422',
+    chipSurface: '#e6e6e6',
+    btnSurface: '#e4e4e4',
+
+    /* --- texto --- */
+    'on-surface': '#252422',
+    'on-surface-variant': '#3f3b36',
+    'on-background': '#252422',
+    'on-bg': '#252422',
+    /* --- semânticas --- */
+    primary: '#252422', //text color
+    secondary: brandSecondary, // bg hover color (inalterada)
+
+    /* --- contraste sobre as cores semânticas --- */
+    'on-primary': '#fffcf2',
+    'on-secondary': '#fffcf2',
+
+    /* --- separador sólido (Apple opaqueSeparator) --- */
+    'separator-opaque': '#C6C6C8',
+  },
+  variables: {
+    'border-color': '#252422',
     'border-opacity': 0.12,
     'high-emphasis-opacity': 0.8,
     'medium-emphasis-opacity': 0.5,
@@ -48,9 +96,11 @@ export const vuetify = createVuetify({
     messages: { pt },
   },
   theme: {
-    defaultTheme: 'lightTheme',
+    /* 'system' segue a preferência do SO/navegador e reage a mudanças */
+    defaultTheme: 'system',
     themes: {
-      lightTheme
+      light: lightTheme,
+      dark: darkTheme,
     },
   },
 

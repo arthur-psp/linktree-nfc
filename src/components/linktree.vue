@@ -2,11 +2,9 @@
   <div class="full-screen-container">
     <DotLottieVue
       autoplay
-      src="/topBar.lottie"
-      :layout="!bpSmAndUp ? { fit: 'fill' } : { fit: 'contain' }"
-      :style="!bpSmAndUp 
-      ? 'width: 100%; height: 67vw; display: block;' 
-      : 'width: 100%; max-width: 800px; aspect-ratio: 1917 / 958; display: block; margin: 0 auto;'"
+      :src="lottieSrc"
+      :layout="lottieLayout"
+      :class="['lottie-topbar', bpSmAndUp ? 'lottie-topbar--desktop' : 'lottie-topbar--mobile']"
     />
 
     <div class="w-100 d-flex align-center justify-center" style="height: 100%;">
@@ -20,7 +18,7 @@
           <div class="link-actions d-flex flex-column justify-center align-center" style="height: 100%;">
             <v-slide-y-reverse-transition>
               <v-btn
-                v-if="showButtons"
+                v-if="showButtons && controller.hasGoogleReview.value"
                 density="default"
                 rounded="pill"
                 class="mb-6 text-primary rounded border"
@@ -38,7 +36,7 @@
 
             <v-slide-y-reverse-transition>
               <v-btn
-                v-if="showButtons"
+                v-if="showButtons && controller.hasMenu.value"
                 density="default"
                 rounded="pill"
                 class="mb-6 text-primary rounded border"
@@ -56,7 +54,7 @@
 
             <v-slide-y-reverse-transition>
               <v-btn
-                v-if="showButtons"
+                v-if="showButtons && controller.hasInstagram.value"
                 density="default"
                 rounded="pill"
                 class="mb-6 text-primary rounded border"
@@ -74,7 +72,7 @@
 
             <v-slide-y-reverse-transition>
               <v-btn
-                v-if="showButtons"
+                v-if="showButtons && controller.hasWifi.value"
                 density="default"
                 rounded="pill"
                 class="mb-6 text-primary rounded border"
@@ -114,10 +112,15 @@
 
     <v-dialog
       v-model="controller.openDialogConnectWifi.value"
-      max-width="90%"
+      :max-width="bpSmAndUp ? 360 : '90%'"
     >
-      <v-card class="d-flex flex-column align-center justify-center pa-3">
-        <div class="border-lg bg-white rounded-lg pa-2">
+      <v-card class="wifi-card d-flex flex-column align-center text-center">
+        <h2 class="wifi-title text-primary">Senha do Wi-Fi</h2>
+        <p class="wifi-subtitle text-medium-emphasis">
+          Aponte a câmera para o QR code ou toque em “Copiar Senha”.
+        </p>
+
+        <div class="wifi-qr d-flex align-center justify-center">
           <qrcode-svg
             :value="controller.wifiQrCode.value"
             :size="220"
@@ -131,11 +134,21 @@
           density="default"
           rounded="pill"
           flat
-          variant="tonal"
-          width="90%"
+          variant="flat"
+          width="100%"
           @click="controller.copyWifiPass"
-          class="mt-2 text-primary"
+          class="wifi-action wifi-action--primary mt-6"
         >Copiar Senha</v-btn>
+
+        <v-btn
+          density="default"
+          rounded="pill"
+          flat
+          variant="text"
+          width="100%"
+          @click="controller.openDialogConnectWifi.value = false"
+          class="wifi-action wifi-action--secondary mt-1"
+        >Fechar</v-btn>
       </v-card>
     </v-dialog>
   </div>
@@ -151,10 +164,25 @@ import { useDisplay } from 'vuetify/dist/vuetify.js';
 // Tempo (ms) para o card terminar de entrar antes dos botões
 const BUTTONS_ENTRY_DELAY = 500
 
+/* Arquivo da animação do topo por breakpoint.
+   O .lottie atual tem frame 393 x 275 (proporção mobile) e é usado nos dois
+   casos; quando existir a versão desktop dedicada, basta trocar o valor de
+   DESKTOP_LOTTIE_SRC (ex.: '/topBar.desktop.lottie') — o arquivo precisa estar
+   em public/. Se existir também um mobile dedicado, troque MOBILE_LOTTIE_SRC. */
+const MOBILE_LOTTIE_SRC = '/topBar.lottie'
+const DESKTOP_LOTTIE_SRC = '/topBar.lottie'
+
 const { controller } = linktreeController();
 const { width } = useDisplay()
 
 const bpSmAndUp = computed(() => width.value > 490)
+
+const lottieSrc = computed(() => (bpSmAndUp.value ? DESKTOP_LOTTIE_SRC : MOBILE_LOTTIE_SRC))
+
+/* 'contain' em vez de 'fill': no mobile o container tem exatamente a proporção
+   do arquivo (393 x 275), então a animação preenche 100% da largura sem
+   distorção nem corte; no desktop mantém o enquadramento de hoje. */
+const lottieLayout = computed(() => ({ fit: 'contain', align: [0.5, 0.5] }))
 
 // Controla a entrada em sequência: primeiro o card, depois os botões
 const showCard = ref(false)
@@ -184,6 +212,96 @@ onBeforeUnmount(() => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+/* ---- Dialog da senha do Wi-Fi: apenas estética (HIG-like) ---- */
+.wifi-card {
+  border-radius: 24px;
+  padding: 28px 24px 20px;
+  overflow: hidden;
+}
+
+.wifi-title {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.wifi-subtitle {
+  margin: 8px 0 0;
+  max-width: 30ch;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* Bloco claro que "abriga" o QR (precisa de fundo claro para ser lido) */
+.wifi-qr {
+  margin-top: 22px;
+  padding: 12px;
+  border-radius: 20px;
+  background-color: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.wifi-action {
+  min-height: 46px;
+  font-weight: 500;
+  letter-spacing: 0;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    opacity 0.25s ease,
+    transform 0.15s ease;
+}
+
+/* Ação principal em destaque, na cor de marca do tema */
+.wifi-action--primary {
+  background-color: rgb(var(--v-theme-secondary));
+  color: rgb(var(--v-theme-on-secondary));
+}
+
+.wifi-action--primary:hover {
+  background-color: color-mix(in srgb, rgb(var(--v-theme-secondary)) 86%, #000);
+}
+
+.wifi-action--primary:active {
+  transform: scale(0.985);
+}
+
+/* Ação secundária discreta */
+.wifi-action--secondary {
+  color: rgb(var(--v-theme-primary));
+  opacity: 0.72;
+}
+
+.wifi-action--secondary:hover {
+  opacity: 1;
+  background-color: color-mix(in srgb, rgb(var(--v-theme-primary)) 8%, transparent);
+}
+
+/* Animação do topo (DotLottieVue) */
+.lottie-topbar {
+  display: block;
+  width: 100%;
+}
+
+/* Mobile: mesma proporção do frame do arquivo (393 x 275).
+   flex-shrink: 0 evita que o item encolha no flex column — o encolhimento
+   deixava o canvas mais baixo que a proporção, esticando a arte. */
+.lottie-topbar--mobile {
+  aspect-ratio: 393 / 275;
+  flex-shrink: 0;
+}
+
+/* Desktop: comportamento atual (max-width 800px, centralizado) */
+.lottie-topbar--desktop {
+  aspect-ratio: 1917 / 958;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .svg-icon {

@@ -19,71 +19,77 @@
           <v-btn
             density="default"
             rounded="pill"
-            class="mb-6"
+            class="mb-6 text-secondary rounded border"
             flat
-            variant="tonal"
+            variant="text"
             width="90%"
             @click="controller.redirectToGoogleMapsReview"
           >
-            <template v-slot:prepend>
+            <div class="d-flex align-center justify-space-between w-100">
+              <span> Deixe uma Avaliação</span>
               <div class="svg-icon svg-icon-review" style="background-color: currentColor;"></div>
-            </template>
-          Deixe uma Avaliação</v-btn>
+            </div>
+          </v-btn>
 
           <v-btn
             density="default"
             rounded="pill"
-            class="mb-6"
+            class="mb-6 text-secondary rounded border"
             flat
-            variant="tonal"
+            variant="text"
             width="90%"
             @click="controller.redirectToMenu"
           >
-            <template v-slot:prepend>
+            <div class="d-flex align-center justify-space-between w-100">
+              <span>Ver Menu</span>
               <div class="svg-icon svg-icon-menu" style="background-color: currentColor;"></div>
-            </template>
-          Ver Menu</v-btn>
+            </div>
+          </v-btn>
 
           <v-btn
             density="default"
             rounded="pill"
-            class="mb-6"
+            class="mb-6 text-secondary rounded border"
             flat
-            variant="tonal"
+            variant="text"
             width="90%"
             @click="controller.redirectToInsta"
           >
-            <template v-slot:prepend>
+            <div class="d-flex align-center justify-space-between w-100">
+              <span>Instagram</span>
               <div class="svg-icon svg-icon-insta" style="background-color: currentColor;"></div>
-            </template>
-          Instagram</v-btn>
+            </div>
+          </v-btn>
 
           <v-btn
             density="default"
             rounded="pill"
-            class="mb-6"
+            class="mb-6 text-secondary rounded border"
             flat
-            variant="tonal"
+            variant="text"
             width="90%"
             @click="controller.handleConnectToWifi"
           >
-            <template v-slot:prepend>
+            <div class="d-flex align-center justify-space-between w-100">
+              <span>Conectar Wi-Fi</span>
               <div class="svg-icon svg-icon-wifi" style="background-color: currentColor;"></div>
-            </template>
-          Conectar Wi-Fi</v-btn>
+            </div>
+          </v-btn>
 
           <v-btn
             density="default"
             rounded="pill"
+            class="text-secondary rounded border "
             flat
-            variant="tonal"
+            variant="text"
             width="90%"
             @click="controller.redirectToGame"
           >
-            <template v-slot:prepend>
+            <div class="d-flex align-center justify-space-between w-100">
+              <span>Jogar</span>
               <div class="svg-icon svg-icon-game" style="background-color: currentColor;"></div>
-            </template>
-          Jogar</v-btn>
+            </div>
+          </v-btn>
         </div>
       </v-card>
     </div>
@@ -152,8 +158,6 @@ onMounted(() => {
 .svg-icon-review {
   mask: url('/review.svg') no-repeat center / contain;
   -webkit-mask: url('/review.svg') no-repeat center / contain;
-  border-width: 10px !important;
-  font-weight: 10px !important;
 }
 
 .svg-icon-menu {
@@ -174,5 +178,9 @@ onMounted(() => {
 .svg-icon-game {
   mask: url('/game.svg') no-repeat center / contain;
   -webkit-mask: url('/game.svg') no-repeat center / contain;
+}
+
+:deep(.v-btn__content) {
+  width: 100% !important;
 }
 </style>

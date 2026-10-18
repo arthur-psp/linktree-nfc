@@ -8,29 +8,29 @@ const lightTheme = {
   dark: false,
   colors: {
     /* --- fundos e superfícies --- */
-    background: '#fff',
-    surface: '#ffedd5',
+    background: '#252422',
+    surface: '#403d39',
     'surface-light': '#3A3A3C',
     'surface-variant': '#fcfcfc',
     'surface-bright': '#3b3b3b',
-    'on-surface-bright': '#FFFFFF',
+    'on-surface-bright': '#252422',
     chipSurface: '#e6e6e6',
     btnSurface: '#e4e4e4',
 
     /* --- texto --- */
-    'on-surface': '#ea580b',
-    'on-surface-variant': '#ea580b',
-    'on-background': '#ea580b',
-    'on-bg': '#ea580b',
+    'on-surface': '#fffcf2',
+    'on-surface-variant': '#fffcf2',
+    'on-background': '#fffcf2',
+    'on-bg': '#fffcf2',
     /* --- semânticas --- */
-    primary: '#ea580b', //text color
-    secondary: '#f97316', // bg hover color
+    primary: '#fffcf2', //text color
+    secondary: '#eb5e28', // bg hover color
 
     /* --- separador sólido (Apple opaqueSeparator) --- */
     'separator-opaque': '#C6C6C8',
   },
   variables: {
-    'border-color': '#000000',
+    'border-color': '#fffcf2',
     'border-opacity': 0.12,
     'high-emphasis-opacity': 0.8,
     'medium-emphasis-opacity': 0.5,

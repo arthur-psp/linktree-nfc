@@ -12,9 +12,21 @@
         <v-card 
           v-if="showCard"
           class="link-card d-flex flex-column py-5 rounded-xl" 
-          :width="!bpSmAndUp ? '95%' : '50%'" 
-          :style="!bpSmAndUp ? 'height: 90vw;' : 'height: 400px;'"
+          :width="!bpSmAndUp ? '100%' : '50%'" 
+          :style="!bpSmAndUp ? 'height: 100%; margin-top: 50px' : 'height: 400px;'"
         >
+          <div v-if="!bpSmAndUp" class="d-flex justify-center align-center">
+            <svg 
+              width="134" 
+              height="5" 
+              viewBox="0 0 134 5" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              class="mx-auto d-block"
+            >
+              <rect width="134" height="5" rx="2.5" fill="currentColor" />
+            </svg>
+          </div>
           <div class="link-actions d-flex flex-column justify-center align-center" style="height: 100%;">
             <v-slide-y-reverse-transition>
               <v-btn

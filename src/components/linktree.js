@@ -1,17 +1,15 @@
 import { computed, ref } from "vue";
+import { minhaLista } from "../data/restaurants";
 
-/* Parâmetros aceitos na query da URL e o link que cada um habilita */
-const PARAM_KEYS = {
-    googleReview: 'gmr',
-    menu: 'm',
-    instagram: 'i',
-    wifiName: 'wn',
-    wifiPass: 'wp',
-}
+/* Token aceito na URL: ?t=xxx (aceita também ?token=xxx) */
+const TOKEN_KEYS = ['t', 'token']
 
 const baseUrlGoogleMaps = 'https://search.google.com/local/writereview?placeid='
 const baseUrlInsta = 'https://www.instagram.com/'
 const baseUrlGame = 'https://reflex-game-beta.vercel.app/'
+
+/* Valor preenchido = texto que não seja só espaços */
+const isFilled = (value) => typeof value === 'string' && value.trim() !== ''
 
 function linktreeController() {
     const searchParams = ref(new URLSearchParams())
@@ -19,30 +17,38 @@ function linktreeController() {
     const wifiQrCode = ref('')
     const wifiPassword = ref('')
 
-    /* Valor bruto do parâmetro ('' quando ausente) */
-    const readParam = (key) => searchParams.value.get(key) ?? ''
-
-    /* Parâmetro válido = existe na query E tem valor (não apenas espaços) */
-    const hasParam = (key) => readParam(key).trim() !== ''
 
     const getQueryParams = () => {
-        const paramsString = window.location.search;
-        searchParams.value = new URLSearchParams(paramsString)
+        searchParams.value = new URLSearchParams(window.location.search)
     }
 
-    /* Presença e valor de cada parâmetro da URL (reativo) */
+    const token = computed(() => {
+        for (const key of TOKEN_KEYS) {
+            const value = searchParams.value.get(key)
+            if (isFilled(value)) return value.trim()
+        }
+        return ''
+    })
+
+    /* Estabelecimento correspondente ao token, buscado com Array.find */
+    const restaurant = computed(() => {
+        if (!token.value) return null
+        return minhaLista.value.find((item) => item.token === token.value) ?? null
+    })
+
+    /* Propriedades normalizadas do estabelecimento encontrado */
     const params = computed(() => ({
-        googleReview: readParam(PARAM_KEYS.googleReview),
-        menu: readParam(PARAM_KEYS.menu),
-        instagram: readParam(PARAM_KEYS.instagram),
-        wifiName: readParam(PARAM_KEYS.wifiName),
-        wifiPass: readParam(PARAM_KEYS.wifiPass),
+        googleReview: restaurant.value?.googleReview ?? '',
+        menu: restaurant.value?.menu ?? '',
+        instagram: restaurant.value?.instagram ?? '',
+        wifiName: restaurant.value?.wifi?.nome ?? '',
+        wifiPass: restaurant.value?.wifi?.senha ?? '',
     }))
 
-    const hasGoogleReview = computed(() => hasParam(PARAM_KEYS.googleReview))
-    const hasMenu = computed(() => hasParam(PARAM_KEYS.menu))
-    const hasInstagram = computed(() => hasParam(PARAM_KEYS.instagram))
-    const hasWifi = computed(() => hasParam(PARAM_KEYS.wifiPass))
+    const hasGoogleReview = computed(() => isFilled(params.value.googleReview))
+    const hasMenu = computed(() => isFilled(params.value.menu))
+    const hasInstagram = computed(() => isFilled(params.value.instagram))
+    const hasWifi = computed(() => isFilled(params.value.wifiPass))
 
     const redirectToGoogleMapsReview = () => {
       if (hasGoogleReview.value) {
@@ -72,19 +78,6 @@ function linktreeController() {
 
     const copyWifiPass = async () => {
       await navigator.clipboard.writeText(wifiPassword.value)
-
-      const url = new URL(window.location.href);
-      url.searchParams.delete(PARAM_KEYS.wifiName)
-      url.searchParams.delete(PARAM_KEYS.wifiPass)
-
-      window.history.replaceState(
-        {},
-        document.title,
-        url.pathname + url.search + url.hash
-      );
-
-      /* Re-sincroniza o estado com a URL: sem wn/wp o botão de Wi-Fi sai do DOM */
-      getQueryParams()
     }
 
     const redirectToGame = () => {
@@ -95,6 +88,8 @@ function linktreeController() {
       controller: {
         openDialogConnectWifi,
         searchParams,
+        token,
+        restaurant,
         params,
         hasGoogleReview,
         hasMenu,

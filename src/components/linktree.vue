@@ -14,6 +14,7 @@
           class="link-card d-flex flex-column py-5 rounded-xl" 
           :width="!bpSmAndUp ? '100%' : '50%'" 
           :style="!bpSmAndUp ? 'height: 100%; margin-top: 50px' : 'height: 400px;'"
+          :aria-busy="controller.loading.value"
         >
           <div v-if="!bpSmAndUp" class="d-flex justify-center align-center">
             <svg 
@@ -28,95 +29,108 @@
             </svg>
           </div>
           <div class="link-actions d-flex flex-column justify-center align-center" style="height: 100%;">
-            <v-slide-y-reverse-transition>
-              <v-btn
-                v-if="showButtons && controller.hasGoogleReview.value"
-                density="default"
-                rounded="pill"
-                class="mb-6 text-primary rounded border"
-                flat
-                variant="text"
+            <!-- Enquanto a planilha responde (ou os botões ainda vão entrar), mostra o skeleton -->
+            <template v-if="showSkeleton">
+              <v-skeleton-loader
+                v-for="n in 4"
+                :key="n"
+                type="button"
                 width="90%"
-                @click="controller.redirectToGoogleMapsReview"
-              >
-                <div class="d-flex align-center justify-space-between w-100">
-                  <span> Deixe uma Avaliação</span>
-                  <div class="svg-icon svg-icon-review"></div>
-                </div>
-              </v-btn>
-            </v-slide-y-reverse-transition>
+                :class="n < 4 ? 'mb-6' : ''"
+              />
+            </template>
 
-            <v-slide-y-reverse-transition>
-              <v-btn
-                v-if="showButtons && controller.hasMenu.value"
-                density="default"
-                rounded="pill"
-                class="mb-6 text-primary rounded border"
-                flat
-                variant="text"
-                width="90%"
-                @click="controller.redirectToMenu"
-              >
-                <div class="d-flex align-center justify-space-between w-100">
-                  <span>Ver Menu</span>
-                  <div class="svg-icon svg-icon-menu"></div>
-                </div>
-              </v-btn>
-            </v-slide-y-reverse-transition>
+            <template v-else>
+              <v-slide-y-reverse-transition>
+                <v-btn
+                  v-if="showButtons && controller.hasGoogleReview.value"
+                  density="default"
+                  rounded="pill"
+                  class="mb-6 text-primary rounded border"
+                  flat
+                  variant="text"
+                  width="90%"
+                  @click="controller.redirectToGoogleMapsReview"
+                >
+                  <div class="d-flex align-center justify-space-between w-100">
+                    <span> Deixe uma Avaliação</span>
+                    <div class="svg-icon svg-icon-review"></div>
+                  </div>
+                </v-btn>
+              </v-slide-y-reverse-transition>
 
-            <v-slide-y-reverse-transition>
-              <v-btn
-                v-if="showButtons && controller.hasInstagram.value"
-                density="default"
-                rounded="pill"
-                class="mb-6 text-primary rounded border"
-                flat
-                variant="text"
-                width="90%"
-                @click="controller.redirectToInsta"
-              >
-                <div class="d-flex align-center justify-space-between w-100">
-                  <span>Instagram</span>
-                  <div class="svg-icon svg-icon-insta"></div>
-                </div>
-              </v-btn>
-            </v-slide-y-reverse-transition>
+              <v-slide-y-reverse-transition>
+                <v-btn
+                  v-if="showButtons && controller.hasMenu.value"
+                  density="default"
+                  rounded="pill"
+                  class="mb-6 text-primary rounded border"
+                  flat
+                  variant="text"
+                  width="90%"
+                  @click="controller.redirectToMenu"
+                >
+                  <div class="d-flex align-center justify-space-between w-100">
+                    <span>Ver Menu</span>
+                    <div class="svg-icon svg-icon-menu"></div>
+                  </div>
+                </v-btn>
+              </v-slide-y-reverse-transition>
 
-            <v-slide-y-reverse-transition>
-              <v-btn
-                v-if="showButtons && controller.hasWifi.value"
-                density="default"
-                rounded="pill"
-                class="mb-6 text-primary rounded border"
-                flat
-                variant="text"
-                width="90%"
-                @click="controller.handleConnectToWifi"
-              >
-                <div class="d-flex align-center justify-space-between w-100">
-                  <span>Conectar Wi-Fi</span>
-                  <div class="svg-icon svg-icon-wifi"></div>
-                </div>
-              </v-btn>
-            </v-slide-y-reverse-transition>
+              <v-slide-y-reverse-transition>
+                <v-btn
+                  v-if="showButtons && controller.hasInstagram.value"
+                  density="default"
+                  rounded="pill"
+                  class="mb-6 text-primary rounded border"
+                  flat
+                  variant="text"
+                  width="90%"
+                  @click="controller.redirectToInsta"
+                >
+                  <div class="d-flex align-center justify-space-between w-100">
+                    <span>Instagram</span>
+                    <div class="svg-icon svg-icon-insta"></div>
+                  </div>
+                </v-btn>
+              </v-slide-y-reverse-transition>
 
-            <v-slide-y-reverse-transition>
-              <v-btn
-                v-if="showButtons"
-                density="default"
-                rounded="pill"
-                class="text-primary rounded border "
-                flat
-                variant="text"
-                width="90%"
-                @click="controller.redirectToGame"
-              >
-                <div class="d-flex align-center justify-space-between w-100">
-                  <span>Jogar</span>
-                  <div class="svg-icon svg-icon-game"></div>
-                </div>
-              </v-btn>
-            </v-slide-y-reverse-transition>
+              <v-slide-y-reverse-transition>
+                <v-btn
+                  v-if="showButtons && controller.hasWifi.value"
+                  density="default"
+                  rounded="pill"
+                  class="mb-6 text-primary rounded border"
+                  flat
+                  variant="text"
+                  width="90%"
+                  @click="controller.handleConnectToWifi"
+                >
+                  <div class="d-flex align-center justify-space-between w-100">
+                    <span>Conectar Wi-Fi</span>
+                    <div class="svg-icon svg-icon-wifi"></div>
+                  </div>
+                </v-btn>
+              </v-slide-y-reverse-transition>
+
+              <v-slide-y-reverse-transition>
+                <v-btn
+                  v-if="showButtons"
+                  density="default"
+                  rounded="pill"
+                  class="text-primary rounded border "
+                  flat
+                  variant="text"
+                  width="90%"
+                  @click="controller.redirectToGame"
+                >
+                  <div class="d-flex align-center justify-space-between w-100">
+                    <span>Jogar</span>
+                    <div class="svg-icon svg-icon-game"></div>
+                  </div>
+                </v-btn>
+              </v-slide-y-reverse-transition>
+            </template>
           </div>
         </v-card>
       </v-slide-x-reverse-transition>
@@ -201,11 +215,18 @@ const showCard = ref(false)
 const showButtons = ref(false)
 let buttonsTimer = null
 
+/* Skeleton fica visível durante a busca e até os botões estarem prontos
+   para entrar — evita um card vazio entre a resposta e a animação. */
+const showSkeleton = computed(() => controller.loading.value || !showButtons.value)
+
 onMounted(async () => {
   controller.getQueryParams()
 
+  // O card entra uma única vez, já com o skeleton dentro
   await nextTick()
   showCard.value = true
+
+  await controller.fetchClient(controller.token.value)
 
   buttonsTimer = setTimeout(() => {
     showButtons.value = true

@@ -1,5 +1,4 @@
 import { computed, ref } from "vue";
-import { minhaLista } from "../data/restaurants";
 
 /* Token aceito na URL: ?t=xxx (aceita também ?token=xxx) */
 const TOKEN_KEYS = ['t', 'token']
@@ -16,7 +15,8 @@ function linktreeController() {
     const openDialogConnectWifi = ref(false)
     const wifiQrCode = ref('')
     const wifiPassword = ref('')
-
+    const client = ref({})
+    const loading = ref(false)
 
     const getQueryParams = () => {
         searchParams.value = new URLSearchParams(window.location.search)
@@ -30,19 +30,13 @@ function linktreeController() {
         return ''
     })
 
-    /* Estabelecimento correspondente ao token, buscado com Array.find */
-    const restaurant = computed(() => {
-        if (!token.value) return null
-        return minhaLista.value.find((item) => item.token === token.value) ?? null
-    })
-
-    /* Propriedades normalizadas do estabelecimento encontrado */
+    /* Propriedades do cliente vindo da planilha, normalizadas para o frontend */
     const params = computed(() => ({
-        googleReview: restaurant.value?.googleReview ?? '',
-        menu: restaurant.value?.menu ?? '',
-        instagram: restaurant.value?.instagram ?? '',
-        wifiName: restaurant.value?.wifi?.nome ?? '',
-        wifiPass: restaurant.value?.wifi?.senha ?? '',
+        googleReview: client.value?.google_place_id ?? '',
+        menu: client.value?.digital_menu ?? '',
+        instagram: client.value?.instagram ?? '',
+        wifiName: client.value?.wifi_name ?? '',
+        wifiPass: client.value?.wifi_pass ?? '',
     }))
 
     const hasGoogleReview = computed(() => isFilled(params.value.googleReview))
@@ -84,18 +78,42 @@ function linktreeController() {
       window.open(baseUrlGame, '_blank')
     }
 
+    const API = 'https://script.google.com/macros/s/AKfycbypK5O2AjvTwoYiSaZ_7W5g-IdwuYweqRU3PhVjXRtVlECyi1VEoRHrPamhPuEfR5A/exec'
+
+    /* Busca na planilha a única linha que tem o token informado */
+    const fetchClient = async (token) => {
+      if (!isFilled(token)) {
+        client.value = {}
+        return
+      }
+
+      loading.value = true
+      try {
+        const res = await fetch(`${API}?token=${encodeURIComponent(token)}`)
+        const data = await res.json()
+        // A planilha pode devolver o objeto direto ou dentro de um array
+        client.value = (Array.isArray(data) ? data[0] : data) ?? {}
+      } catch (err) {
+        client.value = {}
+        console.log('Erro ao carregar clientes: ', err)
+      } finally {
+        loading.value = false
+      }
+    }
+
     return {
       controller: {
         openDialogConnectWifi,
         searchParams,
         token,
-        restaurant,
         params,
         hasGoogleReview,
         hasMenu,
         hasInstagram,
         hasWifi,
         wifiQrCode,
+        client,
+        loading,
 
         getQueryParams,
         redirectToGoogleMapsReview,
@@ -103,7 +121,8 @@ function linktreeController() {
         redirectToInsta,
         redirectToGame,
         handleConnectToWifi,
-        copyWifiPass
+        copyWifiPass,
+        fetchClient,
       }
     }
 }
